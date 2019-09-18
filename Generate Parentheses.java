@@ -90,3 +90,119 @@ class Solution {
         return compare(a.left, b.right) && compare(a.right, b.left);
     }
 }
+
+
+class Solution {
+    public int maxProduct(int[] nums) {
+        int[][] d = new int[nums.length][2];
+        
+        d[0][0] = nums[0];
+        d[0][1] = nums[0];
+        
+        for(int i=1; i < nums.length; i++){
+            int c = nums[i];
+            d[i][0] = Math.max(c, Math.max(c*d[i-1][0], c*d[i-1][1]));
+            d[i][1] = Math.min(c, Math.min(c*d[i-1][0], c*d[i-1][1]));
+
+        }
+        
+        
+        int max = d[0][0];
+        for(int i=1;i<nums.length;i++){
+            if(max < d[i][0]) max = d[i][0];
+        }
+        
+        
+        return max;
+    }
+}
+
+
+
+//merge k sorted list -> database external sort is similar
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+//우선순위 큐 : O(nlogk)
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        if(lists==null || lists.length==0) return null;
+        ListNode ret = null;
+        ListNode cur = null;
+        //min heap
+
+        PriorityQueue<ListNode> pq = new PriorityQueue<>(lists.length,
+                                                        (a,b)->a.val-b.val);
+        
+        for(ListNode node : lists){
+            if(node != null) pq.offer(node);    
+        }
+        
+        while(!pq.isEmpty()){
+            ListNode node = pq.poll();
+            if(node.next != null) pq.offer(node.next);
+            if(ret == null){
+                ret = node;
+                cur = node;
+            } else {
+                cur.next = node;
+                cur = node;
+            }
+        }
+        
+        return ret;
+    }
+}
+
+
+//692. Top K Frequent Words
+class Solution {
+    public class WordCnt{
+        int cnt;
+        String word;
+        WordCnt(String word){
+            this.word = word;
+            this.cnt = 1;
+        }
+    
+    }
+    
+    public List<String> topKFrequent(String[] words, int k) {
+        Map<String, WordCnt> map = new HashMap<>();
+       for(String word: words){
+           if(map.containsKey(word)){
+               map.get(word).cnt++;
+           } else {
+               map.put(word, new WordCnt(word));
+           }
+       }
+        
+        
+        PriorityQueue<WordCnt> pq = new PriorityQueue<>(k, 
+                 (a,b)->a.cnt-b.cnt!=0?a.cnt-b.cnt:b.word.compareTo(a.word));
+        
+        
+        
+        for(WordCnt wordCnt : map.values()){
+            pq.offer(wordCnt);
+            if(pq.size() > k){
+                pq.poll();
+            }
+        }
+        
+        
+        List<String> ret = new ArrayList<String>();
+        while(!pq.isEmpty()){
+            ret.add(0, pq.poll().word);
+        }
+        
+        return ret;
+        
+        
+    }
+}
