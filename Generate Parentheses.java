@@ -206,3 +206,70 @@ class Solution {
         
     }
 }
+
+
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int[][] d = new int[m][n];
+        d[0][0] = 1;
+
+        for(int i=1;i<m;i++){
+            for(int j=1;j<n;j++){
+                d[i][j] = d[i][j-1] + d[i-1][j];
+            }
+        }
+
+        return d[m-1][n-1];       
+    }
+}
+
+
+
+//#886. Possible Bipartition
+class Solution {
+    public boolean possibleBipartition(int N, int[][] dislikes) {
+        List<List<Integer> > adjList = new ArrayList<>();
+
+        for(int i = 0; i < N; i++){
+            adjList.add(new ArrayList<>());
+        }
+
+        boolean[] visited = new boolean[N];
+        boolean[] color = new boolean[N];
+
+        for(int[] dislike : dislikes){
+            int a = dislike[0] - 1;
+            int b = dislike[1] - 1;
+
+            adjList.get(a).add(b);
+            adjList.get(b).add(a);
+
+        }   
+
+        for(int i =0; i < N; i++){
+            if(!visited[i]){
+                visited[i] = true;
+                boolean res = isBipartiteDfs(i, adjList, visited, color);
+                if(!res) return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isBipartiteDfs(int cur, List<List<Integer> > adjList,
+                boolean[] visited, boolean[] color) {
+            for(int next : adjList.get(cur)){
+                if(!visited[next]){
+                    visited[next] = true;
+                    color[next] = !color[cur];
+                    boolean res = isBipartiteDfs(next, adjList, visited, color);
+                    if(!res) return false;
+                } else if(color[next] == color[cur]) {
+                    return false;
+                }
+            }
+        
+        return true;
+    }
+} 
